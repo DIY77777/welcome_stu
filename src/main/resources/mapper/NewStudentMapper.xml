@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lthkj.project.welcome_newstu.dao.NewStudentMapper">
+
+
+    <sql id="newStu">
+        n.Id,n.StuName,n.StuNumber,n.Telphone,n.Password,n.`StatusId`,s.StatusMes,n.AcademyId,a.AcademyName,n.IdcardNub,n.SpecialtyId,
+            sp.SpecialtyName,n.DegreeId,d.DegreeName,n.Gender,n.BirthPlace,n.RoomId,r.DormID,r.RoomBuildingId,b.Adress,n.Classes,n.Photonumber
+    </sql>
+
+    <select id="getOne" parameterType="com.lthkj.project.welcome_newstu.model.NewStudent" resultMap="NSrm">
+        select  <include refid="newStu"/>
+            FROM `university`.`newstudent` as n,`status` as s,`Academy` as a,`Specialty` as sp,`Degree` as d,`room` as r,`building` as b
+        <where>
+            n.`StatusId` = s.StatusId and n.AcademyId = a.AcademyId and n.SpecialtyId = sp.SpecialtyId
+            and n.DegreeId = d.DegreeId and n.RoomId = r.RoomId and r.RoomBuildingId = b.BuildId
+            <if test="Telphone != null and Telphone != ''">
+                and `Telphone` = #{Telphone}
+            </if>
+            <if test="StuNumber != null and StuNumber != ''">
+                and  `StuNumber` = #{StuNumber}
+            </if>
+                and  `Password` = #{Password}
+        </where>;
+    </select>
+
+    <resultMap id="NSrm" type="com.lthkj.project.welcome_newstu.vo.NewStudentVO">
+        <id property="id" column="id"/>
+        <result property="StuName" column="StuName"/>
+        <result property="StuNumber" column="StuNumber"/>
+        <result property="Telphone" column="Telphone"/>
+        <result property="StatusId" column="StatusId"/>
+        <result property="StatusMes" column="StatusMes"/>
+        <result property="AcademyId" column="AcademyId"/>
+        <result property="AcademyName" column="AcademyName"/>
+        <result property="IdcardNub" column="IdcardNub"/>
+        <result property="SpecialtyId" column="SpecialtyId"/>
+        <result property="DegreeId" column="DegreeId"/>
+        <result property="SpecialtyName" column="SpecialtyName"/>
+        <result property="DegreeName" column="DegreeName"/>
+        <result property="Gender" column="Gender"/>
+        <result property="BirthPlace" column="BirthPlace"/>
+        <result property="RoomId" column="RoomId"/>
+        <result property="DormId" column="DormId"/>
+        <result property="RoomBuildingId" column="RoomBuildingId"/>
+        <result property="Adress" column="Adress"/>
+        <result property="Classes" column="Classes"/>
+        <result property="Photonumber" column="Photonumber"/>
+        <result property="LoginStatus" column="LoginStatus"/>
+    </resultMap>
+
+<!--    <update id="updateLoginInfo" parameterType="java.lang.Integer">-->
+<!--        update newstudent set LoginStatus = #{LoginStatus} where id = #{id};-->
+<!--    </update>-->
+
+    <select id="getNstu" resultMap="NSrm">
+        SELECT <include refid="newStu"/> FROM `university`.`newstudent` as n,`status` as s,`Academy` as a,`Specialty` as sp,`Degree` as d,`room` as r,`building` as b
+        <where>
+            n.`StatusId` = s.StatusId and n.AcademyId = a.AcademyId and n.SpecialtyId = sp.SpecialtyId
+            and n.DegreeId = d.DegreeId and n.RoomId = r.RoomId and r.RoomBuildingId = b.BuildId
+        </where>;
+    </select>
+
+    <select id="getCount" parameterType="Map" resultType="java.lang.Integer">
+        select count(1) FROM `university`.`newstudent`
+        <where>
+            <if test="AcademyId != null">
+                and `AcademyId` = #{AcademyId}
+            </if>
+            <if test="IdcardNub != null">
+                and `IdcardNub` = #{IdcardNub}
+            </if>
+            <if test="StatusId != null ">
+                and `StatusId` = #{StatusId}
+            </if>
+            <if test="Gender != null">
+                and `Gender` = #{Gender}
+            </if>
+        </where>;
+    </select>
+
+    <select id="getOneByName" resultMap="NSrm" parameterType="map">
+        SELECT <include refid="newStu"/> FROM `university`.`newstudent` as n,`status` as s,`Academy` as a,`Specialty` as sp,`Degree` as d,`room` as r,`building` as b
+        <where>
+            n.`StatusId` = s.StatusId and n.AcademyId = a.AcademyId and n.SpecialtyId = sp.SpecialtyId
+            and n.DegreeId = d.DegreeId and n.RoomId = r.RoomId and r.RoomBuildingId = b.BuildId
+            <if test="DegreeId != null">
+                and `DegreeId` = #{DegreeId}
+            </if>
+            <if test="SpecialtyId != null">
+                and `SpecialtyId` = #{SpecialtyId}
+            </if>
+            <if test="AcademyId != null">
+                and `AcademyId` = #{AcademyId}
+            </if>
+            <if test="Gender != null">
+                and `Gender` = #{Gender}
+            </if>
+            <if test="StatusId != null ">
+                and `StatusId` = #{StatusId}
+            </if>
+            <if test="StuNumber != null ">
+                and `StuNumber` = #{StuNumber}
+            </if>
+            <if test="StuName != null">
+                and `StuName` concat('%',#{StuName},'%')
+            </if>
+        </where>;
+    </select>
+
+    <update id="updateStuRoomByDelectRoom" parameterType="java.util.List">
+        update newstudent set RoomId = 0 where id in
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>;
+     </update>
+
+    <select id="getStuByRoom" resultMap="NSrm">
+        select n.StuName from newstudent as n,room as r
+	        where n.RoomId = r.RoomId and r.DormId = #{DormId};
+    </select>
+
+    <update id="updateStuRoom" parameterType="Map">
+        update newstudent set RoomId = #{RoomId} where id = #{id};
+    </update>
+
+</mapper>

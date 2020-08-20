@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lthkj.project.welcome_newstu.dao.AdminMapper">
+
+    <select id="getOne" parameterType="com.lthkj.project.welcome_newstu.model.Admin" resultType="com.lthkj.project.welcome_newstu.model.Admin">
+        SELECT ID,Name,Password,Photonumber,AdminNum FROM `admin`
+        <where>
+            <if test="AdminNum != null and AdminNum != ''">
+               and AdminNum = #{AdminNum}
+            </if>
+                and Password = #{Password}
+        </where>;
+    </select>
+
+
+
+
+
+
+
+</mapper>

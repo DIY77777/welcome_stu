@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lthkj.project.welcome_newstu.dao.SpecialtyMapper">
+
+    <select id="getAllSpecialty" resultMap="ASDRm">
+        SELECT s.SpecialtyId,d.DegreeName,GROUP_CONCAT(s.SpecialtyName) as SpecialtyNameAndDegree FROM `academy` as a LEFT JOIN `specialty` as s
+	            on FIND_IN_SET(s.SpecialtyId,a.AcademySpecialty)  LEFT JOIN `degree` as d on s.SpecialtyDegree = d.DegreeId
+                    <if test="AcademyId!=null">
+                        where a.AcademyId = #{AcademyId}
+                    </if>
+                GROUP BY s.SpecialtyId;
+    </select>
+
+    <resultMap id="ASDRm" type="com.lthkj.project.welcome_newstu.vo.SpecialtyDegreeVo">
+        <id property="SpecialtyId" column="SpecialtyId"/>
+        <id property="DegreeName" column="DegreeName"/>
+        <id property="SpecialtyNameAndDegree" column="SpecialtyNameAndDegree"/>
+    </resultMap>
+
+    <select id="getClasses" resultMap="smRm">
+        SELECT n.Classes FROM `newstudent` as n where
+         n.AcademyId = #{AcademyId} and n.SpecialtyId = #{SpecialtyId} GROUP BY n.Classes;
+    </select>
+
+    <resultMap id="smRm" type="com.lthkj.project.welcome_newstu.vo.ClassesVo">
+        <result property="Classes" column="Classes"/>
+    </resultMap>
+
+</mapper>

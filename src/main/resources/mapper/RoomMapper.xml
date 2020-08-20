@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lthkj.project.welcome_newstu.dao.RoomMapper">
+
+    <sql id="RMrm">
+        r.RoomId,r.DormId,r.RoomSum,r.RoomFull,r.AcademyId,a.AcademyName,r.RoomCount,r.RoomType,
+            r.RoomBuildingId,r.CheckPersonId,r.SpecialtyId,s.SpecialtyName,r.DegreeId,d.DegreeName,
+                r.Classes
+    </sql>
+
+
+    <select id="getRoom" parameterType="map" resultType="com.lthkj.project.welcome_newstu.model.Room">
+        SELECT <include refid="RMrm"/> from `room` as r,`academy` as a,`degree` as d,`specialty` as s
+        <where>
+            r.AcademyId = a.AcademyId and r.SpecialtyId = s.SpecialtyId and r.DegreeId = d.DegreeId
+            <if test="RoomId != null and RoomId != ''">
+                and RoomId = #{RoomId}
+            </if>
+            <if test="DromId != null and DromId != ''">
+                and DromId = #{DromId}
+            </if>
+            <if test="RoomFull != null and RoomFull != ''">
+                and RoomFull = #{RoomFull}
+            </if>
+            <if test="RoomCount != null and RoomCount != ''">
+                and RoomCount = #{RoomCount}
+            </if>
+            <if test="RoomType != null and RoomType != ''">
+                and RoomType = #{RoomType}
+            </if>
+            <if test="RoomBuildingId != null and RoomBuildingId != ''">
+                and RoomBuildingId = #{RoomBuildingId}
+            </if>
+            <if test="AcademyId != null and AcademyId != ''">
+                and AcademyId = #{AcademyId}
+            </if>
+            <if test="SpecialtyId != null and SpecialtyId != ''">
+                and SpecialtyId = #{SpecialtyId}
+            </if>
+            <if test="DegreeId != null and DegreeId != ''">
+                and DegreeId = #{DegreeId}
+            </if>
+        </where>;
+    </select>
+
+    <insert id="addRoom" parameterType="Map">
+        insert into `room`(DromId,RoomSum,RoomFull,RoomCount,RoomType,RoomBuildingId)
+	        VALUES(#{DromId},#{RoomSum},#{RoomFull},#{RoomCount},#{RoomType},#{RoomBuildingId});
+    </insert>
+
+    <delete id="delRoom" parameterType="java.lang.Integer">
+        delete from `room` where RoomId = #{RoomId};
+    </delete>
+
+    <update id="updateStuNumAndFullDel" parameterType="Map">
+        UPDATE room set RoomCount = RoomCount-1,
+            RoomFull = 0
+        <if test="CheckPersonId != null">
+            ,CheckPersonId = #{CheckPersonId}
+        </if>
+        where RoomId = #{RoomId};
+    </update>
+
+    <update id="updateStuNumAndFullAdd" parameterType="Map">
+        UPDATE room set RoomCount = RoomCount+1
+            <if test="RoomFull != null">
+                ,RoomFull = 1
+            </if>
+            <if test="CheckPersonId != null">
+                ,CheckPersonId = #{CheckPersonId}
+            </if>
+             where RoomId = #{RoomId};
+    </update>
+
+</mapper>
